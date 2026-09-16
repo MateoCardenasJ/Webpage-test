@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="theme-color" content="#FFF8F4" />
+<title>Nuestros 8 meses 💗</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FFF8F4;
+    --ink:#2E2A33;
+    --muted:#8A8194;
+    --pink:#e88813;
+    --pink-soft:#FBE4C4;
+    --mint:#8FD9C4;
+    --lilac:#C9B8FF;
+    --yellow:#FFD76E;
+    --card:#FFFFFF;
+    --shadow:0 18px 40px rgba(46,42,51,.10);
+    --shadow-sm:0 8px 20px rgba(46,42,51,.08);
+  }
+
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Nunito",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    overflow:hidden;
+    overscroll-behavior:none;
+    position:relative;
+  }
+
+  /* ---------- Fondo decorativo ---------- */
+  .blob{position:fixed;border-radius:50%;filter:blur(42px);opacity:.55;pointer-events:none;z-index:0;}
+  .blob.b1{width:230px;height:230px;background:var(--pink-soft);top:-70px;left:-60px;}
+  .blob.b2{width:200px;height:200px;background:#E4FBF3;bottom:-60px;right:-60px;}
+  .blob.b3{width:160px;height:160px;background:#F0EAFF;top:45%;right:-70px;}
+
+  /* ---------- Estructura de fases ---------- */
+  .stage{position:relative;z-index:2;height:100vh;height:100dvh;}
+  .phase{
+    position:absolute;inset:0;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:28px 22px;
+    text-align:center;
+    opacity:0;transform:translateY(14px) scale(.985);
+    pointer-events:none;
+    transition:opacity .55s ease, transform .55s cubic-bezier(.22,.9,.3,1);
+  }
+  .phase.active{opacity:1;transform:none;pointer-events:auto;}
+  .phase.scrollable{justify-content:flex-start;overflow-y:auto;padding-top:34px;padding-bottom:34px;-webkit-overflow-scrolling:touch;}
+
+  /* ---------- Tipografía ---------- */
+  h1,h2{font-family:"Fraunces",Georgia,serif;font-weight:700;line-height:1.15;margin:0;letter-spacing:-.01em;}
+  h1{font-size:clamp(28px,8.5vw,40px);}
+  h2{font-size:clamp(22px,6.6vw,30px);}
+  .kicker{
+    font-size:15px;color:var(--muted);font-weight:600;
+    max-width:19ch;margin:0 auto 18px;line-height:1.5;
+  }
+  .lead{font-size:16px;color:var(--muted);line-height:1.6;max-width:26ch;margin:14px auto 0;}
+  .hint{font-style:italic;font-size:13px;color:var(--muted);margin:16px auto 0;max-width:30ch;line-height:1.5;}
+
+  .badge{
+    display:inline-block;padding:7px 16px;border-radius:999px;
+    background:var(--pink-soft);color:var(--pink);
+    font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;
+    margin-bottom:22px;
+  }
+
+  /* ---------- Botones ---------- */
+  .btn{
+    appearance:none;border:0;cursor:pointer;
+    font-family:inherit;font-size:17px;font-weight:800;
+    padding:16px 34px;border-radius:999px;
+    background:var(--pink);color:#fff;
+    box-shadow:0 10px 22px rgba(232,136,19,.34);
+    transition:transform .18s ease, box-shadow .18s ease, background .2s ease;
+    touch-action:manipulation;
+  }
+  .btn:active{transform:scale(.95);}
+  .btn.ghost{
+    background:#fff;color:var(--ink);
+    box-shadow:var(--shadow-sm);
+    border:2px solid #F0EBF2;
+  }
+
+  .choices{display:flex;gap:16px;justify-content:center;align-items:center;margin-top:30px;}
+  .slot{position:relative;min-width:112px;min-height:56px;display:flex;align-items:center;justify-content:center;}
+  #noBtn{z-index:50;}
+  #noBtn.loose{
+    position:fixed;margin:0;
+    transition:left .22s cubic-bezier(.2,.9,.3,1), top .22s cubic-bezier(.2,.9,.3,1), transform .18s ease;
+  }
+
+  /* ---------- Fase 1: countdown ---------- */
+  .countdown{display:flex;gap:9px;justify-content:center;align-items:center;margin:22px auto 4px;}
+  .c-unit{
+    display:flex;flex-direction:column;align-items:center;
+    background:var(--card);border-radius:16px;padding:10px 11px;
+    min-width:52px;box-shadow:var(--shadow-sm);
+  }
+  .c-num{font-family:"Fraunces",Georgia,serif;font-weight:700;font-size:21px;color:var(--pink);line-height:1;}
+  .c-label{font-size:9.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:5px;}
+  .c-sep{font-weight:800;color:var(--muted);font-size:16px;}
+  .countdown-today{font-weight:800;color:var(--pink);font-size:15px;margin:22px 0 0;}
+
+  /* ---------- Fase 2 ---------- */
+  .emoji-pop{font-size:58px;line-height:1;animation:pop .7s cubic-bezier(.2,1.5,.4,1) both;}
+  @keyframes pop{from{transform:scale(0) rotate(-25deg);opacity:0;}to{transform:none;opacity:1;}}
+
+  /* ---------- Fase 3: carrusel de recuerdos ---------- */
+  .carousel{display:flex;align-items:center;gap:8px;width:100%;max-width:380px;margin:8px auto 0;}
+  .car-viewport{overflow:hidden;flex:1;border-radius:24px;}
+  .track{display:flex;transition:transform .4s cubic-bezier(.22,.9,.3,1);touch-action:pan-y;}
+  .mem-card{flex:0 0 100%;display:flex;flex-direction:column;align-items:center;padding:4px;}
+  .mem-photo{
+    width:100%;max-width:250px;max-height:36vh;aspect-ratio:4/5;margin:0 auto;
+    border-radius:22px;background:linear-gradient(135deg,var(--pink-soft),#F0EAFF);
+    display:grid;place-items:center;font-size:44px;box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+  .mem-photo img{width:100%;height:100%;object-fit:cover;display:block;}
+  .mem-card .frase{margin:16px 8px 0;font-size:15.5px;font-weight:700;color:var(--ink);line-height:1.5;min-height:2.6em;}
+  .car-arrow{
+    appearance:none;border:0;cursor:pointer;flex:0 0 auto;
+    width:38px;height:38px;border-radius:50%;
+    background:#fff;box-shadow:var(--shadow-sm);color:var(--pink);
+    font-size:20px;font-weight:800;display:grid;place-items:center;
+    touch-action:manipulation;
+  }
+  .car-arrow:disabled{opacity:.3;cursor:default;}
+  .mem-dots{display:flex;gap:7px;justify-content:center;margin-top:16px;}
+  .mem-dot{width:7px;height:7px;border-radius:50%;background:#E4DCE8;transition:background .2s ease, transform .2s ease;}
+  .mem-dot.is-active{background:var(--pink);transform:scale(1.35);}
+
+  /* ---------- Fase 4: formulario ---------- */
+  .form-card{
+    width:100%;max-width:420px;margin:0 auto;
+    display:flex;flex-direction:column;gap:10px;text-align:left;
+  }
+  .option{
+    display:flex;align-items:center;gap:14px;
+    background:var(--card);border:2px solid #F2EDF4;border-radius:18px;
+    padding:14px 16px;cursor:pointer;
+    font-size:16px;font-weight:700;
+    transition:border-color .2s ease, transform .15s ease, box-shadow .2s ease;
+  }
+  .option:active{transform:scale(.985);}
+  .option input{position:absolute;opacity:0;pointer-events:none;}
+  .dot{
+    width:22px;height:22px;flex:0 0 22px;border-radius:50%;
+    border:2px solid #DDD5E2;background:#fff;
+    display:grid;place-items:center;transition:border-color .2s ease;
+  }
+  .dot::after{
+    content:"";width:11px;height:11px;border-radius:50%;background:var(--pink);
+    transform:scale(0);transition:transform .2s cubic-bezier(.2,1.6,.4,1);
+  }
+  .option.is-picked{border-color:var(--pink);box-shadow:0 8px 20px rgba(232,136,19,.16);}
+  .option.is-picked .dot{border-color:var(--pink);}
+  .option.is-picked .dot::after{transform:scale(1);}
+  .opt-emoji{margin-left:auto;font-size:19px;}
+  .other-input{
+    display:none;width:100%;
+    background:var(--card);border:2px solid #F2EDF4;border-radius:18px;
+    padding:14px 16px;font-size:16px;font-weight:700;font-family:inherit;color:var(--ink);
+    transition:border-color .2s ease;
+  }
+  .other-input.show{display:block;}
+  .other-input:focus{outline:none;border-color:var(--pink);}
+
+  /* ---------- Fase 5: tarjeta ---------- */
+  .ticket{
+    width:100%;max-width:360px;
+    background:var(--card);border-radius:30px;
+    padding:30px 24px 26px;
+    box-shadow:var(--shadow);
+    position:relative;overflow:hidden;
+  }
+  .ticket::before{
+    content:"";position:absolute;top:0;left:0;right:0;height:7px;
+    background:linear-gradient(90deg,var(--pink),var(--yellow),var(--mint),var(--lilac));
+  }
+  .ticket .stamp{
+    font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--muted);margin:0;
+  }
+  .ticket .pick{
+    font-family:"Fraunces",Georgia,serif;font-weight:700;
+    font-size:clamp(26px,7.6vw,34px);line-height:1.15;
+    color:var(--pink);margin:10px 0 0;
+  }
+  .divider{height:1px;background:#F1ECF3;margin:20px 0 18px;position:relative;}
+  .divider::before,.divider::after{
+    content:"";position:absolute;top:-9px;width:18px;height:18px;border-radius:50%;background:var(--bg);
+  }
+  .divider::before{left:-33px;}
+  .divider::after{right:-33px;}
+  .ticket p.note{font-size:14.5px;line-height:1.6;color:var(--muted);margin:0;}
+  .ticket .note-photo{
+    width:100%;max-width:210px;margin:2px auto 16px;
+    border-radius:18px;overflow:hidden;box-shadow:var(--shadow-sm);
+  }
+  .ticket .note-photo img{display:block;width:100%;height:auto;}
+  .ticket .note-date{
+    display:inline-block;margin:14px 0 0;padding:7px 18px;
+    border-radius:999px;background:var(--pink-soft);color:var(--pink);
+    font-weight:800;font-size:13.5px;letter-spacing:.04em;
+  }
+  .ticket .note-shout{
+    font-family:"Fraunces",Georgia,serif;font-weight:700;
+    font-size:18px;color:var(--pink);margin:16px 0 0;
+  }
+  .ticket .sig{
+    margin-top:20px;display:flex;align-items:center;justify-content:space-between;gap:12px;
+    font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#C6BDCE;
+  }
+  .heart-row{font-size:16px;letter-spacing:2px;}
+
+  /* ---------- Confeti / corazones ---------- */
+  #sky{position:fixed;inset:0;pointer-events:none;z-index:60;overflow:hidden;}
+  .drop{position:absolute;top:-12vh;animation:fall linear forwards;will-change:transform;}
+  .drop span{display:block;animation:sway ease-in-out infinite alternate;}
+  @keyframes fall{to{transform:translateY(118vh);}}
+  @keyframes sway{from{transform:translateX(-22px) rotate(-40deg);}to{transform:translateX(22px) rotate(40deg);}}
+  .bit{border-radius:3px;}
+
+  @media (prefers-reduced-motion:reduce){
+    *{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.12s !important;}
+  }
+</style>
+</head>
+<body>
+
+<div class="blob b1"></div>
+<div class="blob b2"></div>
+<div class="blob b3"></div>
+<div id="sky"></div>
+
+<main class="stage">
+
+  <!-- ================= FASE 1 ================= -->
+  <section class="phase active" id="phase1">
+    <span class="badge">Para ti 💌</span>
+    <p class="kicker">Hola Sara, gracias por ser tan hermosa</p>
+    <h1>¿Lista para celebrar<br>nuestros 8 meses?</h1>
+
+    <div class="countdown" id="countdown">
+      <div class="c-unit"><span class="c-num" id="cdDays">00</span><span class="c-label">días</span></div>
+      <span class="c-sep">:</span>
+      <div class="c-unit"><span class="c-num" id="cdHours">00</span><span class="c-label">horas</span></div>
+      <span class="c-sep">:</span>
+      <div class="c-unit"><span class="c-num" id="cdMins">00</span><span class="c-label">min</span></div>
+      <span class="c-sep">:</span>
+      <div class="c-unit"><span class="c-num" id="cdSecs">00</span><span class="c-label">seg</span></div>
+    </div>
+    <p class="countdown-today" id="countdownToday" hidden>¡Hoy cumplimos 8 meses! 🎉</p>
+
+    <div class="choices">
+      <div class="slot"><button class="btn" id="yesBtn" type="button">Sí</button></div>
+      <div class="slot"><button class="btn ghost" id="noBtn" type="button">No</button></div>
+    </div>
+    <p class="hint">Pista: uno de los dos botones es más cooperativo que el otro.</p>
+  </section>
+
+  <!-- ================= FASE 2 ================= -->
+  <section class="phase" id="phase2">
+    <div class="emoji-pop">🎉</div>
+    <h2 style="margin-top:22px;">¡8 meses increíbles!</h2>
+    <p class="lead">Y muchos más por venir.</p>
+    <button class="btn" id="continueBtn" type="button" style="margin-top:32px;">Continuar</button>
+  </section>
+
+  <!-- ================= FASE 3 ================= -->
+  <section class="phase scrollable" id="phase3">
+    <div style="max-width:380px;margin:0 auto 6px;">
+      <span class="badge">Nuestra historia 📸</span>
+      <h2>Algunos momentos<br>que guardamos</h2>
+    </div>
+
+    <div class="carousel" id="carousel">
+      <button class="car-arrow" id="carPrev" type="button" aria-label="Anterior">‹</button>
+      <div class="car-viewport">
+        <div class="track" id="carTrack">
+          <div class="mem-card">
+            <div class="mem-photo"><img src="Images/WhatsApp%20Image%202026-09-15%20at%208.54.19%20PM%20(1).jpeg" alt="Nosotros"></div>
+            <p class="frase">Tu primer cumpleaños junto a mí</p>
+          </div>
+          <div class="mem-card">
+            <div class="mem-photo"><img src="Images/WhatsApp%20Image%202026-09-15%20at%208.54.19%20PM%20(2).jpeg" alt="Nosotros"></div>
+            <p class="frase">Ese viaje que no queríamos que terminara</p>
+          </div>
+          <div class="mem-card">
+            <div class="mem-photo"><img src="Images/WhatsApp%20Image%202026-09-15%20at%208.54.19%20PM%20(3).jpeg" alt="Nosotros"></div>
+            <p class="frase">Y jamás dejamos de celebrar</p>
+          </div>
+          <div class="mem-card">
+            <div class="mem-photo"><img src="Images/WhatsApp%20Image%202026-09-15%20at%208.54.19%20PM%20(5).jpeg" alt="Nosotros"></div>
+            <p class="frase">Ese viaje que no olvidamos</p>
+          </div>
+          <div class="mem-card">
+            <div class="mem-photo"><img src="Images/WhatsApp%20Image%202026-09-15%20at%208.54.19%20PM%20(7).jpeg" alt="Nosotros"></div>
+            <p class="frase">Los pequeños momentos que se sienten enormes</p>
+          </div>
+          <div class="mem-card">
+            <div class="mem-photo"><img src="Images/WhatsApp%20Image%202026-09-15%20at%208.54.19%20PM%20(8).jpeg" alt="Nosotros"></div>
+            <p class="frase">Aprendiendo a quererte cada día más</p>
+          </div>
+          <div class="mem-card">
+            <div class="mem-photo"><img src="Images/WhatsApp%20Image%202026-09-15%20at%208.54.19%20PM%20(9).jpeg" alt="Nosotros"></div>
+            <p class="frase">Un recuerdo adicional que es difícil de olvidar</p>
+          </div>
+          <div class="mem-card">
+            <div class="mem-photo"><img src="Images/WhatsApp%20Image%202026-09-15%20at%208.54.19%20PM%20(10).jpeg" alt="Nosotros"></div>
+            <p class="frase">Nuestra manera de hacer las cosas simples, especiales</p>
+          </div>
+          <div class="mem-card">
+            <div class="mem-photo"><img src="Images/WhatsApp%20Image%202026-09-15%20at%208.54.19%20PM%20(11).jpeg" alt="Nosotros"></div>
+            <p class="frase">Contigo, cualquier momento se siente aún más especial</p>
+          </div>
+          <div class="mem-card">
+            <div class="mem-photo"><img src="Images/WhatsApp%20Image%202026-09-15%20at%208.54.19%20PM%20(13).jpeg" alt="Nosotros"></div>
+            <p class="frase">8 meses después, y sigo eligiéndote</p>
+          </div>
+          <div class="mem-card">
+            <div class="mem-photo"><img src="Images/WhatsApp%20Image%202026-09-15%20at%208.54.19%20PM%20(14).jpeg" alt="Nosotros"></div>
+            <p class="frase">Y esto apenas comienza</p>
+          </div>
+        </div>
+      </div>
+      <button class="car-arrow" id="carNext" type="button" aria-label="Siguiente">›</button>
+    </div>
+    <div class="mem-dots" id="carDots"></div>
+
+    <button class="btn" id="carContinueBtn" type="button" style="margin-top:26px;" hidden>Seguir</button>
+  </section>
+
+  <!-- ================= FASE 4 ================= -->
+  <section class="phase scrollable" id="phase4">
+    <div style="max-width:420px;margin:0 auto 22px;">
+      <span class="badge">Falta poco 🍽️</span>
+      <h2>¿Cómo celebramos hoy?</h2>
+    </div>
+
+    <form class="form-card" id="foodForm">
+      <label class="option"><input type="radio" name="comida" value="Pizza" data-emoji="🍕"><span class="dot"></span>Pizza<span class="opt-emoji">🍕</span></label>
+      <label class="option"><input type="radio" name="comida" value="Hamburguesa" data-emoji="🍔"><span class="dot"></span>Hamburguesa<span class="opt-emoji">🍔</span></label>
+      <label class="option"><input type="radio" name="comida" value="Tacos" data-emoji="🌮"><span class="dot"></span>Tacos<span class="opt-emoji">🌮</span></label>
+      <label class="option"><input type="radio" name="comida" value="Salchipapa" data-emoji="🍟"><span class="dot"></span>Salchipapa<span class="opt-emoji">🍟</span></label>
+      <label class="option"><input type="radio" name="comida" value="Asadero de la esquina" data-emoji="🔥"><span class="dot"></span>Asadero de la esquina<span class="opt-emoji">🔥</span></label>
+      <label class="option"><input type="radio" name="comida" value="Empanadas" data-emoji="🥟"><span class="dot"></span>Empanadas<span class="opt-emoji">🥟</span></label>
+      <label class="option"><input type="radio" name="comida" value="Roscón con Pony Malta" data-emoji="🥐"><span class="dot"></span>Roscón con Pony Malta<span class="opt-emoji">🥐</span></label>
+      <label class="option"><input type="radio" name="comida" value="Preparar algo juntos" data-emoji="👩‍🍳"><span class="dot"></span>Preparar algo juntos<span class="opt-emoji">👩‍🍳</span></label>
+      <label class="option"><input type="radio" name="comida" value="Otro" data-emoji="📝" id="otherRadio"><span class="dot"></span>Otro<span class="opt-emoji">📝</span></label>
+      <input type="text" class="other-input" id="otherInput" placeholder="Cuéntame tu idea..." maxlength="60">
+
+      <p class="hint" style="margin-top:6px;">Si no te decides, la pizza nunca falla</p>
+      <button class="btn" type="submit" id="confirmBtn" style="margin-top:10px;">Confirmar selección</button>
+    </form>
+  </section>
+
+  <!-- ================= FASE 5 ================= -->
+  <section class="phase" id="phase5">
+    <div class="ticket">
+      <p class="stamp">Celebraremos nuestros 8 meses con</p>
+      <p class="pick" id="pickedFood">Pizza</p>
+      <div class="divider"></div>
+      <div class="note-photo"><img src="Images/WhatsApp%20Image%202026-09-15%20at%208.54.19%20PM%20(6).jpeg" alt="Nosotros"></div>
+      <p class="note">Este ticket certifica 8 meses de risas, aventuras y amor. Aquí va la promesa de muchos meses más por celebrar juntos.</p>
+      <p class="note-date">📅 25 de Septiembre</p>
+      <p class="note-shout">¡Espero mi screenshot! 📸</p>
+      <div class="sig">
+        <span>Sara &amp; Camilo</span>
+        <span class="heart-row">💗💗💗</span>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------------- Navegación entre fases ---------------- */
+  var phases = {
+    1: document.getElementById('phase1'),
+    2: document.getElementById('phase2'),
+    3: document.getElementById('phase3'),
+    4: document.getElementById('phase4'),
+    5: document.getElementById('phase5')
+  };
+
+  function goTo(n, done){
+    Object.keys(phases).forEach(function(k){ phases[k].classList.remove('active'); });
+    setTimeout(function(){
+      phases[n].classList.add('active');
+      phases[n].scrollTop = 0;
+      if (done) done();
+    }, 430);
+  }
+
+  /* ---------------- Fase 1: cuenta regresiva ---------------- */
+  var countdownTarget = new Date('2026-09-17T00:00:00');
+  var cdDays  = document.getElementById('cdDays');
+  var cdHours = document.getElementById('cdHours');
+  var cdMins  = document.getElementById('cdMins');
+  var cdSecs  = document.getElementById('cdSecs');
+  var cdBox   = document.getElementById('countdown');
+  var cdToday = document.getElementById('countdownToday');
+
+  function pad(n){ return n < 10 ? '0' + n : '' + n; }
+
+  function updateCountdown(){
+    var diff = countdownTarget.getTime() - Date.now();
+    if (diff <= 0){
+      cdBox.hidden = true;
+      cdToday.hidden = false;
+      return;
+    }
+    cdBox.hidden = false;
+    cdToday.hidden = true;
+    var s = Math.floor(diff / 1000);
+    var days = Math.floor(s / 86400); s -= days * 86400;
+    var hours = Math.floor(s / 3600); s -= hours * 3600;
+    var mins = Math.floor(s / 60); s -= mins * 60;
+    var secs = s;
+    cdDays.textContent  = pad(days);
+    cdHours.textContent = pad(hours);
+    cdMins.textContent  = pad(mins);
+    cdSecs.textContent  = pad(secs);
+  }
+
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+
+  /* ---------------- Fase 1: el botón "No" huye ---------------- */
+  var noBtn  = document.getElementById('noBtn');
+  var yesBtn = document.getElementById('yesBtn');
+  var loose  = false;
+
+  function intersects(x, y, w, h, r){
+    var pad = 20;
+    return !(x + w + pad < r.left || x > r.right + pad || y + h + pad < r.top || y > r.bottom + pad);
+  }
+
+  function flee(){
+    var rect = noBtn.getBoundingClientRect();
+    var w = rect.width, h = rect.height;
+    var pad = 14;
+    var maxX = Math.max(pad, window.innerWidth  - w - pad);
+    var maxY = Math.max(pad, window.innerHeight - h - pad);
+    var yesRect = yesBtn.getBoundingClientRect();
+    var x = pad, y = pad;
+
+    for (var i = 0; i < 24; i++){
+      x = pad + Math.random() * (maxX - pad);
+      y = pad + Math.random() * (maxY - pad);
+      var farEnough = Math.abs(x - rect.left) + Math.abs(y - rect.top) > 130;
+      if (farEnough && !intersects(x, y, w, h, yesRect)) break;
+    }
+
+    if (!loose){
+      loose = true;
+      noBtn.style.width  = w + 'px';
+      noBtn.style.height = h + 'px';
+      noBtn.classList.add('loose');
+    }
+    noBtn.style.left = x + 'px';
+    noBtn.style.top  = y + 'px';
+    noBtn.style.transform = 'rotate(' + (Math.random() * 24 - 12).toFixed(1) + 'deg)';
+  }
+
+  // Móvil: escapa apenas el dedo lo toca o lo roza.
+  noBtn.addEventListener('touchstart', flee, {passive:true});
+  noBtn.addEventListener('touchmove',  flee, {passive:true});
+  noBtn.addEventListener('pointerdown', flee, {passive:true});
+  noBtn.addEventListener('pointerenter', flee);
+  noBtn.addEventListener('mouseover', flee);
+  noBtn.addEventListener('focus', flee);
+
+  // Si por milagro logra el click.
+  noBtn.addEventListener('click', function(e){
+    e.preventDefault();
+    window.alert('Escoge una opción válida');
+    flee();
+  });
+
+  yesBtn.addEventListener('click', function(){
+    goTo(2, startParty);
+  });
+
+  /* ---------------- Celebración: confeti + corazones ---------------- */
+  var sky = document.getElementById('sky');
+  var COLORS = ['#e88813','#FFD76E','#8FD9C4','#C9B8FF','#F5B25E','#7FD1F0'];
+  var HEARTS = ['💗','💖','💕','❤️','💘','✨'];
+  var partyTimer = null;
+
+  function dropOne(){
+    var isHeart = Math.random() < 0.45;
+    var drop = document.createElement('div');
+    drop.className = 'drop';
+    drop.style.left = (Math.random() * 100) + 'vw';
+    drop.style.animationDuration = (2.6 + Math.random() * 2.6).toFixed(2) + 's';
+    drop.style.animationDelay = (Math.random() * 0.5).toFixed(2) + 's';
+
+    var inner = document.createElement('span');
+    inner.style.animationDuration = (0.8 + Math.random() * 0.9).toFixed(2) + 's';
+
+    if (isHeart){
+      inner.textContent = HEARTS[Math.floor(Math.random() * HEARTS.length)];
+      inner.style.fontSize = (16 + Math.random() * 18).toFixed(0) + 'px';
+    } else {
+      inner.className = 'bit';
+      inner.style.background = COLORS[Math.floor(Math.random() * COLORS.length)];
+      inner.style.width  = (7 + Math.random() * 6).toFixed(0) + 'px';
+      inner.style.height = (10 + Math.random() * 8).toFixed(0) + 'px';
+    }
+
+    drop.appendChild(inner);
+    sky.appendChild(drop);
+    drop.addEventListener('animationend', function(){ drop.remove(); });
+    setTimeout(function(){ if (drop.parentNode) drop.remove(); }, 8000);
+  }
+
+  function burst(n){ for (var i = 0; i < n; i++) dropOne(); }
+
+  function startParty(){
+    burst(40);
+    if (partyTimer) clearInterval(partyTimer);
+    partyTimer = setInterval(function(){ burst(4); }, 320);
+    setTimeout(stopParty, 9000);
+  }
+
+  function stopParty(){
+    if (partyTimer){ clearInterval(partyTimer); partyTimer = null; }
+  }
+
+  /* ---------------- Fase 2 -> 3 ---------------- */
+  document.getElementById('continueBtn').addEventListener('click', function(){
+    stopParty();
+    goTo(3);
+  });
+
+  /* ---------------- Fase 3: carrusel de recuerdos ---------------- */
+  var carTrack = document.getElementById('carTrack');
+  var carCards = Array.prototype.slice.call(carTrack.children);
+  var carDotsWrap = document.getElementById('carDots');
+  var carPrev = document.getElementById('carPrev');
+  var carNext = document.getElementById('carNext');
+  var carIndex = 0;
+
+  carCards.forEach(function(_, i){
+    var dot = document.createElement('span');
+    dot.className = 'mem-dot' + (i === 0 ? ' is-active' : '');
+    carDotsWrap.appendChild(dot);
+  });
+  var carDots = Array.prototype.slice.call(carDotsWrap.children);
+
+  var carContinueBtn = document.getElementById('carContinueBtn');
+
+  function updateCarousel(){
+    carTrack.style.transform = 'translateX(-' + (carIndex * 100) + '%)';
+    carDots.forEach(function(d, i){ d.classList.toggle('is-active', i === carIndex); });
+    carPrev.disabled = carIndex === 0;
+    carNext.disabled = carIndex === carCards.length - 1;
+    carContinueBtn.hidden = carIndex !== carCards.length - 1;
+  }
+
+  carPrev.addEventListener('click', function(){
+    if (carIndex > 0){ carIndex--; updateCarousel(); }
+  });
+  carNext.addEventListener('click', function(){
+    if (carIndex < carCards.length - 1){ carIndex++; updateCarousel(); }
+  });
+
+  var carTouchStartX = null;
+  carTrack.addEventListener('touchstart', function(e){
+    carTouchStartX = e.touches[0].clientX;
+  }, {passive:true});
+  carTrack.addEventListener('touchend', function(e){
+    if (carTouchStartX === null) return;
+    var dx = e.changedTouches[0].clientX - carTouchStartX;
+    if (Math.abs(dx) > 40){
+      if (dx < 0 && carIndex < carCards.length - 1){ carIndex++; }
+      else if (dx > 0 && carIndex > 0){ carIndex--; }
+      updateCarousel();
+    }
+    carTouchStartX = null;
+  }, {passive:true});
+
+  updateCarousel();
+
+  document.getElementById('carContinueBtn').addEventListener('click', function(){
+    goTo(4);
+  });
+
+  /* ---------------- Fase 4: selección ---------------- */
+  var form = document.getElementById('foodForm');
+  var options = Array.prototype.slice.call(form.querySelectorAll('.option'));
+  var otherRadio = document.getElementById('otherRadio');
+  var otherInput = document.getElementById('otherInput');
+
+  form.addEventListener('change', function(){
+    options.forEach(function(opt){
+      opt.classList.toggle('is-picked', opt.querySelector('input').checked);
+    });
+    otherInput.classList.toggle('show', otherRadio.checked);
+    if (otherRadio.checked) otherInput.focus();
+  });
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var picked = form.querySelector('input[name="comida"]:checked');
+    if (!picked){
+      window.alert('Escoge una opción válida');
+      return;
+    }
+    var value = picked.value;
+    var emoji = picked.getAttribute('data-emoji') || '🍽️';
+    if (picked === otherRadio){
+      var customText = otherInput.value.trim();
+      if (!customText){
+        window.alert('Escribe tu idea en el campo de texto');
+        otherInput.focus();
+        return;
+      }
+      value = customText;
+      emoji = '💡';
+    }
+    document.getElementById('pickedFood').textContent = value + ' ' + emoji;
+    goTo(5, function(){
+      setTimeout(function(){ burst(26); }, 250);
+    });
+  });
+
+})();
+</script>
+</body>
+</html>
